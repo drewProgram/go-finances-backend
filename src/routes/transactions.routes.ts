@@ -45,14 +45,22 @@ transactionsRouter.delete('/:id', async (request, response) => {
   return response.status(204).send();
 });
 
-// transactionsRouter.post(
-//   '/import',
-//   upload.array('files'),
-//   async (request, response) => {
-//     const importTransactionsService = new ImportTransactionsService();
+transactionsRouter.post(
+  '/import',
+  upload.single('file'),
+  async (request, response) => {
+    try {
+      const importTransactionsService = new ImportTransactionsService();
 
-//     // importTransactionsService.execute(transactionsFiles);
-//   },
-// );
+      const transactions = await importTransactionsService.execute(
+        request.file.path,
+      );
+
+      return response.json(transactions);
+    } catch (err) {
+      return response.status(400).json({ error: err.message });
+    }
+  },
+);
 
 export default transactionsRouter;
